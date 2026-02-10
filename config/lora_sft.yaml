@@ -1,0 +1,49 @@
+### model
+model_name_or_path: cache/qwen3-14b
+quantization_bit: 4  # choices: [8 (bnb/hqq/eetq), 4 (bnb/hqq), 3 (hqq), 2 (hqq)]
+quantization_method: bnb  # choices: [bnb, hqq, eetq]
+trust_remote_code: true
+#double_quantization: false
+
+### method
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_rank: 16
+lora_target: all
+
+### dataset
+dataset: wvs_train_aug
+eval_dataset: wvs_valid_aug
+template: qwen3
+cutoff_len: 2048
+#max_samples: 10
+overwrite_cache: true
+preprocessing_num_workers: 16
+dataloader_num_workers: 1
+
+### output
+output_dir: saves/qwen3-14b/qlora/sft
+logging_steps: 1
+save_steps: 20
+plot_loss: true
+overwrite_output_dir: true
+save_only_model: false
+report_to: wandb  # choices: [none, wandb, tensorboard, swanlab, mlflow]
+
+### train
+per_device_train_batch_size: 8
+gradient_accumulation_steps: 8
+learning_rate: 1e-4
+num_train_epochs: 4.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+bf16: true
+ddp_timeout: 180000000
+deepspeed: "examples/deepspeed/ds_z3_3090.json"  # Path to your JSON
+
+### eval
+#val_size: 1
+per_device_eval_batch_size: 4
+eval_strategy: steps
+eval_steps: 20
